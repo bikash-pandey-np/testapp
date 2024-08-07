@@ -99,7 +99,7 @@ class TestC extends Controller
         // Log the response for debugging
         Log::info('Response: '. print_r($response->json(), true));
 
-        return $response->json();
+        return response()->json($response->json());
     }
 
     private function getHMAC($requestBody)
