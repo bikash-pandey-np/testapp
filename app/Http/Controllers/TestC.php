@@ -12,8 +12,7 @@ class TestC extends Controller
     {
          // Generate nonce
          $nonce = now()->timestamp;
-         // Store nonce in session or other storage if needed
-         // session(['nonce' => $nonce]);
+        
  
          Log::info('Nonce: ' . $nonce);
  
@@ -25,10 +24,8 @@ class TestC extends Controller
              'sign' => $hmac,
              'nonce' => $nonce
          ];
- 
-         // Process the request or forward it
-         // Using Http Client to forward the request
-         $response = Http::withHeaders($headers)->post(env('BALANCE_URL'), $request->all());
+         $body = ['nonce' => $nonce];
+         $response = Http::withHeaders($headers)->post(env('BALANCE_URL'), $body);
  
          return $response->json();
     }
