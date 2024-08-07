@@ -17,7 +17,12 @@ use App\Http\Controllers\TestC;
 
 Route::get('/check-balance', [TestC::class, 'checkBalance']);
 Route::get('/withdraw-detail', [TestC::class, 'withdrawDetail']);
-Route::get('/', [TestC::class, 'withdraw']);
+// Route::get('/', [TestC::class, 'withdraw']);
+
+
+Route::get('/', function () {
+    die();
+});
 
 
 
