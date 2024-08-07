@@ -94,7 +94,7 @@ class TestC extends Controller
         Log::info('Request Headers: '. json_encode($headers));
 
         // Send the request
-        $response = Http::withHeaders($headers)->post($WITHDRAW_DETAIL_URL, $bodyJson);
+        $response = Http::withHeaders($headers)->post($WITHDRAW_DETAIL_URL, $body);
 
         // Log the response for debugging
         Log::info('Response: '. print_r($response->json(), true));
