@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 
 class TestC extends Controller
 {
-    public function index(Request $request) 
+    public function checkBalance(Request $request) 
     {
          // Generate nonce
          $nonce = now()->timestamp;
@@ -16,7 +16,6 @@ class TestC extends Controller
  
          Log::info('Nonce: ' . $nonce);
          
-         // Generate HMAC signature
          
          $body = ['nonce' => $nonce];
          $hmac = $this->getHMAC(json_encode($body));
@@ -29,6 +28,31 @@ class TestC extends Controller
          $response = Http::withHeaders($headers)->post(env('BALANCE_URL'), $body);
  
          return $response->json();
+    }
+
+    public function withdrawDetail(Request $request)
+    {
+        // Generate nonce
+        $nonce = now()->timestamp;
+        
+ 
+        Log::info('Nonce: ' . $nonce);
+        
+        
+        $body = [
+            'nonce' => $nonce,
+            'cointype' => 'USDT'
+        ];
+        $hmac = $this->getHMAC(json_encode($body));
+        // Add HMAC signature to headers
+        $headers = [
+            'sign' => $hmac,
+            'key' => env('C_API_KEY'),
+            'nonce' => $nonce
+           ];
+        $response = Http::withHeaders($headers)->post(env('WITHDRAW_DETAIL_URL'), $body);
+
+        return $response->json();
     }
 
     private function getHMAC($requestBody)

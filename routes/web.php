@@ -15,6 +15,8 @@ use App\Http\Controllers\TestC;
 |
 */
 
-Route::get('/', [TestC::class, 'index']);
+Route::get('/check-balance', [TestC::class, 'checkBalance']);
+Route::get('/', [TestC::class, 'withdrawDetail']);
+
 
 
