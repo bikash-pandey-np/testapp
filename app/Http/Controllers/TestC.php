@@ -97,7 +97,7 @@ class TestC extends Controller
     
         // Send the request using Laravel's HTTP client
         $response = Http::withHeaders($headers)
-            ->post($WITHDRAW_DETAIL_URL, $bodyJson);
+            ->post($WITHDRAW_DETAIL_URL, $body);
     
         // Log the response for debugging
         Log::info('Response: '. print_r($response->json(), true));
