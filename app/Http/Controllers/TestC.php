@@ -58,10 +58,11 @@ class TestC extends Controller
     {
         // Generate nonce
         $nonce = now()->timestamp;
- 
-        Log::info('Nonce: ' . $nonce);
-        
-        
+
+        // Log the generated nonce
+        Log::info('Generated Nonce: ' . $nonce);
+
+        // Prepare the request body
         $body = [
             'nonce' => $nonce,
             'address' => "TT7BHe1dpN3SBTuz1LWdcyAgnff6LQPTEv",
@@ -71,14 +72,31 @@ class TestC extends Controller
             'network' => "LTC",
             'paymentid' => ""
         ];
-        $hmac = $this->getHMAC(json_encode($body));
+
+        // Generate HMAC signature
+        $bodyJson = json_encode($body);
+        $hmac = $this->getHMAC($bodyJson);
+
+        // Log the HMAC signature and the body JSON
+        Log::info('Request Body JSON: ' . $bodyJson);
+        Log::info('Generated HMAC: ' . $hmac);
+
         // Add HMAC signature to headers
         $headers = [
             'sign' => $hmac,
             'key' => env('C_API_KEY'),
-            'nonce' => $nonce
-           ];
+            'nonce' => $nonce,
+            'Content-Type' => 'application/json'  // Ensure Content-Type is set to application/json
+        ];
+
+        // Log the headers
+        Log::info('Request Headers: ', $headers);
+
+        // Send the request
         $response = Http::withHeaders($headers)->post(env('WITHDRAW_DETAIL_URL'), $body);
+
+        // Log the response for debugging
+        Log::info('Response: ', $response->json());
 
         return $response->json();
     }
