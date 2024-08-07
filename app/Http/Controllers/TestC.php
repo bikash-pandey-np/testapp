@@ -57,13 +57,13 @@ class TestC extends Controller
     public function withdraw(Request $request)
     {
         $WITHDRAW_DETAIL_URL = 'https://www.coinspot.com.au/api/v2/my/coin/withdraw/send';
-
+    
         // Generate nonce
         $nonce = now()->timestamp;
-
+    
         // Log the generated nonce
         Log::info('Generated Nonce: ' . $nonce);
-
+    
         // Prepare the request body
         $body = [
             'nonce' => $nonce,
@@ -74,38 +74,45 @@ class TestC extends Controller
             'network' => "LTC",
             'paymentid' => ""
         ];
-
+    
         // Encode the body as JSON
         $bodyJson = json_encode($body);
-
+    
         // Generate HMAC signature
         $hmac = $this->getHMAC($bodyJson);
-
+    
         // Log the HMAC signature and the body JSON
         Log::info('Request Body JSON: ' . $bodyJson);
         Log::info('Generated HMAC: ' . $hmac);
-
+    
         // Prepare headers
         $headers = [
             'sign' => $hmac,
             'key' => env('C_API_KEY'),
             'Content-Type' => 'application/json'
         ];
-
+    
+        // Log headers for debugging
+        Log::info('Request Headers: ', $headers);
+    
         // Send the request using Laravel's HTTP client
         $response = Http::withHeaders($headers)
-            ->post($WITHDRAW_DETAIL_URL, $body);
-
+            ->post($WITHDRAW_DETAIL_URL, $bodyJson);
+    
         // Log the response for debugging
-        Log::info('Response: ' . print_r($response, true));
-
+        Log::info('Response: ', $response->json());
+    
         return $response->json();
     }
+    
     private function getHMAC($requestBody)
     {
         $secretKey = env('C_SEC_KEY');
-        $postBody = $requestBody; 
-
-        return hash_hmac('sha512', $postBody, $secretKey);
+    
+        // Log the secret key and body for debugging
+        Log::info('Secret Key: ' . $secretKey);
+        Log::info('Request Body for HMAC: ' . $requestBody);
+    
+        return hash_hmac('sha512', $requestBody, $secretKey);
     }
 }
