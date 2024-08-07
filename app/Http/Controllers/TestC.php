@@ -15,17 +15,17 @@ class TestC extends Controller
         
  
          Log::info('Nonce: ' . $nonce);
- 
+         
          // Generate HMAC signature
-         $hmac = $this->getHMAC($request->getContent());
- 
+         
+         $body = ['nonce' => $nonce];
+         $hmac = $this->getHMAC(json_encode($body));
          // Add HMAC signature to headers
          $headers = [
              'sign' => $hmac,
              'key' => env('C_API_KEY'),
              'nonce' => $nonce
-         ];
-         $body = ['nonce' => $nonce];
+            ];
          $response = Http::withHeaders($headers)->post(env('BALANCE_URL'), $body);
  
          return $response->json();
