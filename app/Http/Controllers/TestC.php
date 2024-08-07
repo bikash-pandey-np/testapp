@@ -91,7 +91,7 @@ class TestC extends Controller
         ];
 
         // Log the headers
-        Log::info('Request Headers: '. $headers);
+        Log::info('Request Headers: '. json_encode($headers));
 
         // Send the request
         $response = Http::withHeaders($headers)->post($WITHDRAW_DETAIL_URL, $bodyJson);
