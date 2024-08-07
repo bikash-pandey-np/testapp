@@ -97,7 +97,7 @@ class TestC extends Controller
             ->post($WITHDRAW_DETAIL_URL, $body);
 
         // Log the response for debugging
-        Log::info('Response: ', $response);
+        Log::info('Response: ' . print_r($response, true));
 
         return $response->json();
     }
