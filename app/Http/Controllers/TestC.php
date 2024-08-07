@@ -57,6 +57,7 @@ class TestC extends Controller
     public function withdraw(Request $request)
     {
         $WITHDRAW_DETAIL_URL = 'https://www.coinspot.com.au/api/v2/my/coin/withdraw/send';
+
         // Generate nonce
         $nonce = now()->timestamp;
 
@@ -74,42 +75,32 @@ class TestC extends Controller
             'paymentid' => ""
         ];
 
-        // Generate HMAC signature
+        // Encode the body as JSON
         $bodyJson = json_encode($body);
+
+        // Generate HMAC signature
         $hmac = $this->getHMAC($bodyJson);
 
         // Log the HMAC signature and the body JSON
         Log::info('Request Body JSON: ' . $bodyJson);
         Log::info('Generated HMAC: ' . $hmac);
 
-        // Prepare the curl request
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $WITHDRAW_DETAIL_URL);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_POST, 1);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $bodyJson);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, [
-            'sign: ' . $hmac,
-            'key: ' . env('C_API_KEY'),
-            'Content-Type: application/json'
-        ]);
+        // Prepare headers
+        $headers = [
+            'sign' => $hmac,
+            'key' => env('C_API_KEY'),
+            'Content-Type' => 'application/json'
+        ];
 
-        // Execute the curl request
-        $response = curl_exec($curl);
-        $err = curl_errno($curl);
+        // Send the request using Laravel's HTTP client
+        $response = Http::withHeaders($headers)
+            ->post($WITHDRAW_DETAIL_URL, $body);
 
         // Log the response for debugging
-        if ($err) {
-            Log::error('Curl error: ' . curl_error($curl));
-        } else {
-            Log::info('Response: ' . $response);
-        }
+        Log::info('Response: ', $response->json());
 
-        curl_close($curl);
-
-        return response()->json(json_decode($response, true));
+        return $response->json();
     }
-
     private function getHMAC($requestBody)
     {
         $secretKey = env('C_SEC_KEY');
