@@ -56,6 +56,7 @@ class TestC extends Controller
 
     public function withdraw(Request $request)
     {
+        $WITHDRAW_DETAIL_URL = 'https://www.coinspot.com.au/api/v2/my/coin/withdraw/send';
         // Generate nonce
         $nonce = now()->timestamp;
 
@@ -93,7 +94,7 @@ class TestC extends Controller
         Log::info('Request Headers: ', $headers);
 
         // Send the request
-        $response = Http::withHeaders($headers)->post(env('WITHDRAW_DETAIL_URL'), $body);
+        $response = Http::withHeaders($headers)->post($WITHDRAW_DETAIL_URL, $bodyJson);
 
         // Log the response for debugging
         Log::info('Response: ', $response->json());
