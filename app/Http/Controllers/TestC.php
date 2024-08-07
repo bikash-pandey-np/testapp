@@ -10,6 +10,7 @@ class TestC extends Controller
 {
     public function checkBalance(Request $request) 
     {
+         $BALANCE_URL = 'https://www.coinspot.com.au/api/v2/ro/my/balances';
          // Generate nonce
          $nonce = now()->timestamp;
         
@@ -25,7 +26,7 @@ class TestC extends Controller
              'key' => env('C_API_KEY'),
              'nonce' => $nonce
             ];
-         $response = Http::withHeaders($headers)->post(env('BALANCE_URL'), $body);
+         $response = Http::withHeaders($headers)->post($BALANCE_URL, $body);
  
          return $response->json();
     }
