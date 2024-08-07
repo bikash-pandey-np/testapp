@@ -82,24 +82,32 @@ class TestC extends Controller
         Log::info('Request Body JSON: ' . $bodyJson);
         Log::info('Generated HMAC: ' . $hmac);
 
-        // Add HMAC signature to headers
-        $headers = [
-            'sign' => $hmac,
-            'key' => env('C_API_KEY'),
-            'nonce' => $nonce,
-            'Content-Type' => 'application/json'  // Ensure Content-Type is set to application/json
-        ];
+        // Prepare the curl request
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $WITHDRAW_DETAIL_URL);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_POST, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $bodyJson);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, [
+            'sign: ' . $hmac,
+            'key: ' . env('C_API_KEY'),
+            'Content-Type: application/json'
+        ]);
 
-        // Log the headers
-        Log::info('Request Headers: '. json_encode($headers));
-
-        // Send the request
-        $response = Http::withHeaders($headers)->post($WITHDRAW_DETAIL_URL, $body);
+        // Execute the curl request
+        $response = curl_exec($curl);
+        $err = curl_errno($curl);
 
         // Log the response for debugging
-        Log::info('Response: '. print_r($response->json(), true));
+        if ($err) {
+            Log::error('Curl error: ' . curl_error($curl));
+        } else {
+            Log::info('Response: ' . $response);
+        }
 
-        return response()->json($response->json());
+        curl_close($curl);
+
+        return response()->json(json_decode($response, true));
     }
 
     private function getHMAC($requestBody)
