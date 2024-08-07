@@ -23,6 +23,7 @@ class TestC extends Controller
          // Add HMAC signature to headers
          $headers = [
              'sign' => $hmac,
+             'nonce' => $nonce
          ];
  
          // Process the request or forward it
