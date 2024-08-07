@@ -91,13 +91,13 @@ class TestC extends Controller
         ];
 
         // Log the headers
-        Log::info('Request Headers: ', $headers);
+        Log::info('Request Headers: '. $headers);
 
         // Send the request
         $response = Http::withHeaders($headers)->post($WITHDRAW_DETAIL_URL, $bodyJson);
 
         // Log the response for debugging
-        Log::info('Response: ', $response->json());
+        Log::info('Response: '. print_r($response->json(), true));
 
         return $response->json();
     }
